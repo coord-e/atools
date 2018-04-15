@@ -2,11 +2,11 @@
 # -*- coding: utf-8 -*-
 # vim:ft=sh :
 
-ABS_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+ABS_DIR="$(dirname $( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd ))"
 
-source $ABS_DIR/atools-setup
+source $ABS_DIR/.envrc
 
-PATH=$ABS_DIR:$PATH
+PATH=$ABS_DIR/bin:$PATH
 
 subcommand="${ATOOLS_SUBCOMMAND_PREFIX}$1"
 shift
@@ -14,5 +14,5 @@ shift
 if type "$subcommand" >/dev/null 2>&1 ; then
     $subcommand "$@"
 else
-    echo "$subcommand is not a valid subcommand for atools."
+    error "$subcommand is not a valid subcommand for atools."
 fi
