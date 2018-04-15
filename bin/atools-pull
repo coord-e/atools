@@ -1,0 +1,14 @@
+#!/bin/bash
+# -*- coding: utf-8 -*-
+# vim:ft=sh :
+
+
+info "Pulling contests..."
+
+pull_api_info contests
+
+info "Pulling problems..."
+
+pull_api_info problems
+
+info "Done"

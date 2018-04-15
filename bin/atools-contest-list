@@ -2,4 +2,4 @@
 # -*- coding: utf-8 -*-
 # vim:ft=sh :
 
-curl https://kenkoooo.com/atcoder/atcoder-api/info/contests 2>/dev/null | jq '.[].title + " (" + .[].id + ")"' -r
+get_api_info contests | jq '.[].title + " (" + .[].id + ")"' -r
