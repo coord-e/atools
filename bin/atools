@@ -4,7 +4,7 @@
 
 ABS_DIR="$(dirname $( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd ))"
 
-source $ABS_DIR/.envrc
+source $ABS_DIR/bin/atools-common
 
 PATH=$ABS_DIR/bin:$PATH
 
