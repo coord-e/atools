@@ -4,7 +4,7 @@
 
 contest_id=$1
 
-problems=$(curl https://kenkoooo.com/atcoder/atcoder-api/info/problems 2>/dev/null)
+problems=$(get_api_info problems)
 [ -z "$contest_id" ] \
   && jq ".[].title + \" (\" + .[].id + \")\"" -r <<< $problems \
   || jq ".[] | if .contest_id == \"${contest_id}\" then .title + \" (\" + .id + \")\" else empty end" -r <<< $problems
