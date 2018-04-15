@@ -1,0 +1,18 @@
+#!/bin/bash
+# -*- coding: utf-8 -*-
+# vim:ft=sh :
+
+ABS_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+source $ABS_DIR/atools-setup
+
+PATH=$ABS_DIR:$PATH
+
+subcommand="${ATOOLS_SUBCOMMAND_PREFIX}$1"
+shift
+
+if type "$subcommand" >/dev/null 2>&1 ; then
+    $subcommand "$@"
+else
+    echo "$subcommand is not a valid subcommand for atools."
+fi

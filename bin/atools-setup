@@ -2,8 +2,9 @@
 # -*- coding: utf-8 -*-
 # vim:ft=sh :
 
-set -eu
+set -u
 
 readonly ATOOLS_VERSION='0.1'
 
+readonly ATOOLS_SUBCOMMAND_PREFIX='atools-'
 
