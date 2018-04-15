@@ -1,0 +1,5 @@
+#!/bin/bash
+# -*- coding: utf-8 -*-
+# vim:ft=sh :
+
+curl https://beta.atcoder.jp/contests/$1/tasks/$1_$2 | pup '#main-container > div > div:nth-child(2)' |  w3m -T text/html
