@@ -1,0 +1,41 @@
+#!/bin/bash
+# -*- coding: utf-8 -*-
+# vim:ft=sh :
+
+function random-select() {
+  contents=$(cat -)
+
+  linenum=$(wc -l <<< $contents)
+
+  nth=$(( $RANDOM % $linenum ))
+
+  tail -n+$nth <<< $contents | head -n1
+}
+
+function destruct-description-id() {
+  cmd="sed -e 's/.*(\(.*\))$/\1/g'"
+  if [ -p /dev/stdin ]; then
+    cat - | eval $cmd
+  else
+    cat $1 | eval $cmd
+  fi
+}
+
+function destruct-description-name() {
+  cmd="sed -e 's/\(.*\)(.*)$/\1/g'"
+  if [ -p /dev/stdin ]; then
+    cat - | eval $cmd
+  else
+    cat $1 | eval $cmd
+  fi
+}
+
+contests=$(atools contest-list)
+
+contest_id=$(random-select <<< $contests | destruct-description-id)
+
+problems=$(atools problem-list $contest_id)
+
+problem_id=$(random-select <<< $problems | destruct-description-id)
+
+echo $contest_id $problem_id
