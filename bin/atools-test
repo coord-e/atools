@@ -1,0 +1,23 @@
+#!/bin/bash
+# -*- coding: utf-8 -*-
+# vim:ft=sh :
+
+set -ue
+
+cmd=$3
+content=$(curl https://beta.atcoder.jp/contests/$1/tasks/$2 2>/dev/null)
+
+idx=0
+input="dummy"
+answer="dummy"
+while [ ! -z "$input$answer" ]; do
+  if ((idx++)); then
+    info "Test #$((idx - 1)): "
+    result=$(echo -n $input | $cmd)
+    [ "$result" = "$answer" ] && info "Successful" || warn "expected: $answer got: $result"
+  fi
+  input="$(xmllint --html --xpath '(//div[@id="task-statement"]//h3[contains(text(), "入力例")])['$idx']//following-sibling::pre/text()|(//div[@id="task-statement"]//h3[contains(text(), "入力例")])['$idx']//following-sibling::section/pre/text()' - <<< $content 2>/dev/null | tr -d '\r')"
+  input=$(echo -n $input)
+  answer=$(xmllint --html --xpath '(//div[@id="task-statement"]//h3[contains(text(), "出力例")])['$idx']//following-sibling::pre/text()|(//div[@id="task-statement"]//h3[contains(text(), "出力例")])['$idx']//following-sibling::section/pre/text()' - <<< $content 2>/dev/null | tr -d '\r')
+  answer=$(echo -n $answer)
+done
