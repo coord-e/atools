@@ -1,0 +1,11 @@
+#!/bin/bash
+# -*- coding: utf-8 -*-
+# vim:ft=sh :
+
+contest_id=$1
+
+problems=$(curl https://kenkoooo.com/atcoder/atcoder-api/info/problems 2>/dev/null)
+[ -z "$contest_id" ] \
+  && jq ".[].title + \" (\" + .[].id + \")\"" -r <<< $problems \
+  || jq ".[] | if .contest_id == \"${contest_id}\" then .title + \" (\" + .id + \")\" else empty end" -r <<< $problems
+
