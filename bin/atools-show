@@ -2,4 +2,69 @@
 # -*- coding: utf-8 -*-
 # vim:ft=sh :
 
-curl https://beta.atcoder.jp/contests/$1/tasks/$2 | pup '#main-container > div > div:nth-child(2)' |  w3m -T text/html
+usage() {
+    echo "Usage: $ATOOLS_PROGNAME show [OPTIONS] PROBLEM_ID"
+    echo "  Show a description page of a problem"
+    echo
+    echo "Options:"
+    echo "  -h, --help"
+    echo "  -V, --version"
+    echo "  -c, --contest ARG"
+    echo
+    exit 1
+}
+
+for OPT in "$@"
+do
+    case "$OPT" in
+        '-h'|'--help' )
+            usage
+            exit 1
+            ;;
+        '-V'|'--version' )
+            echo $ATOOLS_VERSION
+            exit 1
+            ;;
+        '-c'|'--contest' )
+            if [[ -z "$2" ]] || [[ "$2" =~ ^-+ ]]; then
+                echo "$ATOOLS_PROGNAME: option requires an argument -- $1" 1>&2
+                exit 1
+            fi
+            arg_contest_id="$2"
+            shift 2
+            ;;
+        '--'|'-' )
+            shift 1
+            param+=( "$@" )
+            break
+            ;;
+        -*)
+            echo "$ATOOLS_PROGNAME: illegal option -- '$(echo $1 | sed 's/^-*//')'" 1>&2
+            exit 1
+            ;;
+        *)
+            if [[ ! -z "$1" ]] && [[ ! "$1" =~ ^-+ ]]; then
+                #param=( ${param[@]} "$1" )
+                param+=( "$1" )
+                shift 1
+            fi
+            ;;
+    esac
+done
+
+
+if [ -z $param ]; then
+    echo "$ATOOLS_PROGNAME: too few arguments" 1>&2
+    echo "Try '$ATOOLS_PROGNAME --help' for more information." 1>&2
+    exit 1
+fi
+
+[ -z "$ATOOLS_CURRENT_CONTEST" -a -z "$arg_contest_id" ] && error "You must specify contest id with -c when \$ATOOLS_CURRENT_CONTEST is not set."
+
+if [ -z "$ATOOLS_CURRENT_CONTEST" ];then
+  current_contest=$arg_contest_id
+else
+  current_contest=$ATOOLS_CURRENT_CONTEST
+fi
+
+curl https://beta.atcoder.jp/contests/$current_contest/tasks/$param | pup '#main-container > div > div:nth-child(2)' |  w3m -T text/html
