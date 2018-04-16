@@ -4,8 +4,84 @@
 
 source "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/atools-common"
 
-cmd=$3
-content=$(curl -sS https://beta.atcoder.jp/contests/$1/tasks/$2)
+usage() {
+    echo "Usage: $ATOOLS_PROGNAME test [OPTIONS] COMMAND"
+    echo "  Test your answers."
+    echo
+    echo "Options:"
+    echo "  -h, --help"
+    echo "  -V, --version"
+    echo "  -c, --contest ARG"
+    echo "  -p, --problem ARG"
+    echo
+    exit 1
+}
+
+for OPT in "$@"
+do
+    case "$OPT" in
+        '-h'|'--help' )
+            usage
+            exit 1
+            ;;
+        '-V'|'--version' )
+            echo $ATOOLS_VERSION
+            exit 1
+            ;;
+        '-p'|'--problem' )
+            if [[ -z "$2" ]] || [[ "$2" =~ ^-+ ]]; then
+                error "$ATOOLS_PROGNAME test: option requires an argument -- $1"
+            fi
+            arg_problem_id="$2"
+            shift 2
+            ;;
+        '-c'|'--contest' )
+            if [[ -z "$2" ]] || [[ "$2" =~ ^-+ ]]; then
+                error "$ATOOLS_PROGNAME test: option requires an argument -- $1"
+            fi
+            arg_contest_id="$2"
+            shift 2
+            ;;
+        '--'|'-' )
+            shift 1
+            param+=( "$@" )
+            break
+            ;;
+        -*)
+            error "$ATOOLS_PROGNAME test: illegal option -- '$(echo $1 | sed 's/^-*//')'"
+            ;;
+        *)
+            if [[ ! -z "$1" ]] && [[ ! "$1" =~ ^-+ ]]; then
+                #param=( ${param[@]} "$1" )
+                param+=( "$1" )
+                shift 1
+            fi
+            ;;
+    esac
+done
+
+
+if [ -z $param ]; then
+    error "$ATOOLS_PROGNAME test: please supply a test command\nTry '$ATOOLS_PROGNAME test --help' for more information."
+fi
+
+[ -z "$ATOOLS_CURRENT_CONTEST" -a -z "$arg_contest_id" ] && error "You must specify contest id with -c when \$ATOOLS_CURRENT_CONTEST is not set."
+[ -z "$ATOOLS_CURRENT_PROBLEM" -a -z "$arg_problem_id" ] && error "You must specify problem id with -p when \$ATOOLS_CURRENT_PROBLEM is not set."
+
+if [ -z "$ATOOLS_CURRENT_CONTEST" ];then
+  current_contest=$arg_contest_id
+else
+  current_contest=$ATOOLS_CURRENT_CONTEST
+fi
+
+if [ -z "$ATOOLS_CURRENT_PROBLEM" ];then
+  current_problem=$arg_problem_id
+else
+  current_problem=$ATOOLS_CURRENT_PROBLEM
+fi
+
+cmd=$param
+content=$(curl -sS https://beta.atcoder.jp/contests/$current_contest/tasks/$current_problem)
 
 idx=0
 input="dummy"
