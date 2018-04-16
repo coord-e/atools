@@ -32,7 +32,7 @@ do
             break
             ;;
         -*)
-            echo "$ATOOLS_PROGNAME: illegal option -- '$(echo $1 | sed 's/^-*//')'" 1>&2
+            error "illegal option -- '$(echo $1 | sed 's/^-*//')'" 1>&2
             exit 1
             ;;
         *)
@@ -47,9 +47,7 @@ do
 done
 
 if [ -z $param ]; then
-    echo "$ATOOLS_PROGNAME: Please supply a subcommand" 1>&2
-    echo "Try '$ATOOLS_PROGNAME --help' for more information." 1>&2
-    exit 1
+    error "$ATOOLS_PROGNAME: Please supply a subcommand\nTry '$ATOOLS_PROGNAME --help' for more information."
 fi
 
 subcommand="${ATOOLS_SUBCOMMAND_PREFIX}$param"

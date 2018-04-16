@@ -14,7 +14,8 @@ function info (){
 }
 
 function error (){
-  echo -e "\033[0;31m[ERROR] \033[0m\033[0;01m $1\033[0;0m Exiting."
+  echo -e "\033[0;31m[ERROR] \033[0m\033[0;01m $1\033[0;0m"
+  echo "Exiting."
   exit -1
 }
 
