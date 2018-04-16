@@ -32,7 +32,7 @@ do
             break
             ;;
         -*)
-            error "illegal option -- '$(echo $1 | sed 's/^-*//')'" 1>&2
+            error "illegal option -- '$(echo $1 | sed 's/^-*//')'"
             exit 1
             ;;
         *)

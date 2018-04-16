@@ -29,8 +29,7 @@ do
             ;;
         '-c'|'--contest' )
             if [[ -z "$2" ]] || [[ "$2" =~ ^-+ ]]; then
-                echo "$ATOOLS_PROGNAME: option requires an argument -- $1" 1>&2
-                exit 1
+                error "$ATOOLS_PROGNAME show: option requires an argument -- $1"
             fi
             arg_contest_id="$2"
             shift 2
@@ -41,8 +40,7 @@ do
             break
             ;;
         -*)
-            echo "$ATOOLS_PROGNAME: illegal option -- '$(echo $1 | sed 's/^-*//')'" 1>&2
-            exit 1
+            error "$ATOOLS_PROGNAME show: illegal option -- '$(echo $1 | sed 's/^-*//')'"
             ;;
         *)
             if [[ ! -z "$1" ]] && [[ ! "$1" =~ ^-+ ]]; then
