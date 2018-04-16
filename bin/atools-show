@@ -56,8 +56,8 @@ done
 
 
 if [ -z $param ]; then
-    echo "$ATOOLS_PROGNAME: too few arguments" 1>&2
-    echo "Try '$ATOOLS_PROGNAME --help' for more information." 1>&2
+    echo "$ATOOLS_PROGNAME show: too few arguments" 1>&2
+    echo "Try '$ATOOLS_PROGNAME show --help' for more information." 1>&2
     exit 1
 fi
 
