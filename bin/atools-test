@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # vim:ft=sh :
 
-set -ue
+source "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/atools-common"
 
 cmd=$3
 content=$(curl https://beta.atcoder.jp/contests/$1/tasks/$2 2>/dev/null)

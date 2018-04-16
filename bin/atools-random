@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 # vim:ft=sh :
 
+source "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/atools-common"
+
 function random-select() {
   contents=$(cat -)
 

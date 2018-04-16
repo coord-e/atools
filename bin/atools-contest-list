@@ -2,4 +2,6 @@
 # -*- coding: utf-8 -*-
 # vim:ft=sh :
 
+source "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/atools-common"
+
 get_api_info contests | jq '.[].title + " (" + .[].id + ")"' -r
