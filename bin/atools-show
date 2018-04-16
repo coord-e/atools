@@ -65,4 +65,4 @@ else
   current_contest=$ATOOLS_CURRENT_CONTEST
 fi
 
-curl https://beta.atcoder.jp/contests/$current_contest/tasks/$param | pup '#main-container > div > div:nth-child(2)' |  w3m -T text/html
+curl -sS https://beta.atcoder.jp/contests/$current_contest/tasks/$param | pup '#main-container > div > div:nth-child(2)' |  w3m -T text/html
