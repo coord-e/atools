@@ -12,11 +12,7 @@ subcommand="${ATOOLS_SUBCOMMAND_PREFIX}$1"
 shift
 
 if type "$subcommand" >/dev/null 2>&1 ; then
-    if file $(which $subcommand) | grep -q 'shell script'; then
-      $subcommand "$@"
-    else
-      $subcommand "$@"
-    fi
+    $subcommand "$@"
 else
     error "$subcommand is not a valid subcommand for atools."
 fi
