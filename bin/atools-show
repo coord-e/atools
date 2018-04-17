@@ -52,13 +52,28 @@ do
     esac
 done
 
-[ -z "$ATOOLS_CURRENT_CONTEST" -a -z "$arg_contest_id" ] && error "You must specify contest id with -c when \$ATOOLS_CURRENT_CONTEST is not set."
-[ -z "$ATOOLS_CURRENT_PROBLEM" -a -z "$param" ] && error "You must specify problem id when \$ATOOLS_CURRENT_PROBLEM is not set."
-
 if [ -z "$ATOOLS_CURRENT_CONTEST" ];then
-  current_contest=$arg_contest_id
+  if [ -z "$arg_contest_id" ];then
+    current_contest=$(atools contest-list | fzf | destruct_description_id)
+  else
+    current_contest=$arg_contest_id
+  fi
 else
   current_contest=$ATOOLS_CURRENT_CONTEST
 fi
 
-curl -sS https://beta.atcoder.jp/contests/$current_contest/tasks/$param | pup '#main-container > div > div:nth-child(2)' |  w3m -T text/html
+[ -z "$current_contest" ] && error "You must specify contest id with -c when \$ATOOLS_CURRENT_CONTEST is not set."
+
+if [ -z "$ATOOLS_CURRENT_PROBLEM" ];then
+  if [ -z "$param" ];then
+    current_problem=$(atools problem-list -c $current_contest | fzf | destruct_description_id)
+  else
+    current_problem=$param
+  fi
+else
+  current_problem=$ATOOLS_CURRENT_PROBLEM
+fi
+
+[ -z "$current_problem" ] && error "You must specify problem id when \$ATOOLS_CURRENT_PROBLEM is not set."
+
+curl -sS https://beta.atcoder.jp/contests/$current_contest/tasks/$current_problem | pup '#main-container > div > div:nth-child(2)' |  w3m -T text/html
