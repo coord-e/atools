@@ -65,20 +65,11 @@ if [ -z $param ]; then
   error "$(current_script $0): please supply a test command\nTry '$(current_script $0) --help' for more information."
 fi
 
-[ -z "$ATOOLS_CURRENT_CONTEST" -a -z "$arg_contest_id" ] && error "You must specify contest id with -c when \$ATOOLS_CURRENT_CONTEST is not set."
-[ -z "$ATOOLS_CURRENT_PROBLEM" -a -z "$arg_problem_id" ] && error "You must specify problem id with -p when \$ATOOLS_CURRENT_PROBLEM is not set."
+current_contest=$(get_contest_id "$arg_contest_id")
+[ -z "$current_contest" ] && error "You must specify contest id with -c when \$ATOOLS_CURRENT_CONTEST is not set."
 
-if [ -z "$ATOOLS_CURRENT_CONTEST" ];then
-  current_contest=$arg_contest_id
-else
-  current_contest=$ATOOLS_CURRENT_CONTEST
-fi
-
-if [ -z "$ATOOLS_CURRENT_PROBLEM" ];then
-  current_problem=$arg_problem_id
-else
-  current_problem=$ATOOLS_CURRENT_PROBLEM
-fi
+current_problem=$(get_problem_id "$arg_problem_id" "$current_contest")
+[ -z "$current_problem" ] && error "You must specify problem id with -p when \$ATOOLS_CURRENT_PROBLEM is not set."
 
 cmd=$param
 content=$(curl -sS https://beta.atcoder.jp/contests/$current_contest/tasks/$current_problem)
