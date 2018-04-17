@@ -57,14 +57,10 @@ do
     esac
 done
 
-[ ! -v arg_all -a -z "$ATOOLS_CURRENT_CONTEST" -a -z "$arg_contest_id" ] && error "You must specify contest id with -c when \$ATOOLS_CURRENT_CONTEST or --all is not set."
 [ -n "$arg_contest_id" -a -v arg_all ] && error "You can't specify both --all and --contest"
 
-if [ -z "$ATOOLS_CURRENT_CONTEST" ];then
-  current_contest=$arg_contest_id
-else
-  current_contest=$ATOOLS_CURRENT_CONTEST
-fi
+current_contest=$(get_contest_id $arg_contest_id)
+[ ! -v arg_all -a -z "$current_contest" ] && error "You must specify contest id with -c when \$ATOOLS_CURRENT_CONTEST or --all is not set."
 
 problems=$(get_api_info problems)
 if [ -v arg_all ]; then
