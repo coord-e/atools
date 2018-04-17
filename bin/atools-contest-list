@@ -4,4 +4,4 @@
 
 source "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/atools-common"
 
-get_api_info contests | jq '.[].title + " (" + .[].id + ")"' -r
+get_api_info contests | jq '.[] | .title + " (" + .id + ")"' -r
