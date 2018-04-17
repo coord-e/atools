@@ -4,34 +4,6 @@
 
 source "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/atools-common"
 
-function random-select() {
-  contents=$(cat -)
-
-  linenum=$(wc -l <<< $contents)
-
-  nth=$(( $RANDOM % $linenum ))
-
-  tail -n+$nth <<< $contents | head -n1
-}
-
-function destruct-description-id() {
-  cmd="sed -e 's/.*(\(.*\))$/\1/g'"
-  if [ -p /dev/stdin ]; then
-    cat - | eval $cmd
-  else
-    cat $1 | eval $cmd
-  fi
-}
-
-function destruct-description-name() {
-  cmd="sed -e 's/\(.*\)(.*)$/\1/g'"
-  if [ -p /dev/stdin ]; then
-    cat - | eval $cmd
-  else
-    cat $1 | eval $cmd
-  fi
-}
-
 contests=$(atools contest-list)
 
 contest_id=$(random-select <<< $contests | destruct-description-id)
