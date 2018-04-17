@@ -5,7 +5,7 @@
 source "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/atools-common"
 
 usage() {
-    echo "Usage: $(current_script $0) [OPTIONS] PROBLEM_ID"
+    echo "Usage: $(current_script $0) [OPTIONS] [PROBLEM_ID]"
     echo "  Show a description page of a problem"
     echo
     echo "Options:"
@@ -52,12 +52,8 @@ do
     esac
 done
 
-
-if [ -z $param ]; then
-  error "$(current_script $0): too few arguments\nTry '$(current_script $0) --help' for more information."
-fi
-
 [ -z "$ATOOLS_CURRENT_CONTEST" -a -z "$arg_contest_id" ] && error "You must specify contest id with -c when \$ATOOLS_CURRENT_CONTEST is not set."
+[ -z "$ATOOLS_CURRENT_PROBLEM" -a -z "$param" ] && error "You must specify problem id when \$ATOOLS_CURRENT_PROBLEM is not set."
 
 if [ -z "$ATOOLS_CURRENT_CONTEST" ];then
   current_contest=$arg_contest_id
