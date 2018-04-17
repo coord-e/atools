@@ -85,29 +85,29 @@ function destruct_description_name() {
 }
 
 function get_contest_id() {
-  if [ -z "$ATOOLS_CURRENT_CONTEST" ];then
-    if [ -z "$1" ];then
+  if [ -z "$1" ];then
+    if [ -z "$ATOOLS_CURRENT_CONTEST" ];then
       atools contest-list | $(find_fuzzy_finder) | destruct_description_id
     else
-      echo $1
+      echo $ATOOLS_CURRENT_CONTEST
     fi
   else
-    echo $ATOOLS_CURRENT_CONTEST
+    echo $1
   fi
 }
 
 function get_problem_id() {
-  if [ -z "$ATOOLS_CURRENT_PROBLEM" ];then
-    if [ -z "$1" ];then
+  if [ -z "$1" ];then
+    if [ -z "$ATOOLS_CURRENT_PROBLEM" ];then
       if [ -z "$2" ];then
         atools problem-list -a | $(find_fuzzy_finder) | destruct_description_id
       else
         atools problem-list -c $2 | $(find_fuzzy_finder) | destruct_description_id
       fi
     else
-      echo $1
+       echo $ATOOLS_CURRENT_PROBLEM
     fi
   else
-     echo $ATOOLS_CURRENT_PROBLEM
+    echo $1
   fi
 }
