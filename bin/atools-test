@@ -2,10 +2,77 @@
 # -*- coding: utf-8 -*-
 # vim:ft=sh :
 
-set -ue
+source "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/atools-common"
 
-cmd=$3
-content=$(curl https://beta.atcoder.jp/contests/$1/tasks/$2 2>/dev/null)
+usage() {
+    echo "Usage: $(current_script $0) [OPTIONS] COMMAND"
+    echo "  Test your answers."
+    echo
+    echo "Options:"
+    echo "  -h, --help"
+    echo "  -V, --version"
+    echo "  -c, --contest ARG"
+    echo "  -p, --problem ARG"
+    echo
+    exit 1
+}
+
+for OPT in "$@"
+do
+    case "$OPT" in
+        '-h'|'--help' )
+            usage
+            exit 1
+            ;;
+        '-V'|'--version' )
+            echo $ATOOLS_VERSION
+            exit 1
+            ;;
+        '-p'|'--problem' )
+            if [[ -z "$2" ]] || [[ "$2" =~ ^-+ ]]; then
+              error "$(current_script $0): option requires an argument -- $1"
+            fi
+            arg_problem_id="$2"
+            shift 2
+            ;;
+        '-c'|'--contest' )
+            if [[ -z "$2" ]] || [[ "$2" =~ ^-+ ]]; then
+              error "$(current_script $0): option requires an argument -- $1"
+            fi
+            arg_contest_id="$2"
+            shift 2
+            ;;
+        '--'|'-' )
+            shift 1
+            param+=( "$@" )
+            break
+            ;;
+        -*)
+            error "$(current_script $0): illegal option -- '$(echo $1 | sed 's/^-*//')'"
+            ;;
+        *)
+            if [[ ! -z "$1" ]] && [[ ! "$1" =~ ^-+ ]]; then
+                #param=( ${param[@]} "$1" )
+                param+=( "$1" )
+                shift 1
+            fi
+            ;;
+    esac
+done
+
+
+if [ -z $param ]; then
+  error "$(current_script $0): please supply a test command\nTry '$(current_script $0) --help' for more information."
+fi
+
+current_contest=$(get_contest_id "$arg_contest_id")
+[ -z "$current_contest" ] && error "You must specify contest id with -c when \$ATOOLS_CURRENT_CONTEST is not set."
+
+current_problem=$(get_problem_id "$arg_problem_id" "$current_contest")
+[ -z "$current_problem" ] && error "You must specify problem id with -p when \$ATOOLS_CURRENT_PROBLEM is not set."
+
+cmd=$param
+content=$(curl -sS https://beta.atcoder.jp/contests/$current_contest/tasks/$current_problem)
 
 idx=0
 input="dummy"

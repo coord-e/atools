@@ -3,27 +3,35 @@
 
 readonly ATOOLS_VERSION='0.1'
 readonly ATOOLS_SUBCOMMAND_PREFIX='atools-'
+readonly ATOOLS_PROGNAME='atools'
 
 export ATOOLS_CACHE_PATH=$HOME/.cache/atools
 
 mkdir -p $ATOOLS_CACHE_PATH
 
+function current_script() {
+  a=()
+  a=($(tr '-' ' ' <<< $1))
+  echo "atools ${a[1]}"
+}
+
 function info (){
-  echo -e "\033[0;32m-> \033[0m\033[0;01m $1\033[0;0m"
+  >&2 echo -e "\033[0;32m-> \033[0m\033[0;01m $1\033[0;0m"
 }
 
 function error (){
-  echo -e "\033[0;31m[ERROR] \033[0m\033[0;01m $1\033[0;0m Exiting."
+  >&2 echo -e "\033[0;31m[ERROR]\033[0m\033[0;01m $1\033[0;0m"
+  >&2 echo "Exiting."
   exit -1
 }
 
 function warn (){
-  echo -e "\033[0;33m[WARN] \033[0m\033[0;01m $1\033[0;0m"
+  >&2 echo -e "\033[0;33m[WARN] \033[0m\033[0;01m $1\033[0;0m"
 }
 
 
 function pull_api_info() {
-  curl -o $ATOOLS_CACHE_PATH/$1 https://kenkoooo.com/atcoder/atcoder-api/info/$1 2>/dev/null
+  curl -sS -o $ATOOLS_CACHE_PATH/$1 https://kenkoooo.com/atcoder/atcoder-api/info/$1
 }
 
 function get_api_info() {
@@ -32,4 +40,88 @@ function get_api_info() {
     pull_api_info $1
   fi
   cat $cache_path
+}
+
+function random_select() {
+  contents=$(cat -)
+
+  linenum=$(wc -l <<< $contents)
+
+  nth=$(( $RANDOM % $linenum ))
+
+  tail -n+$nth <<< $contents | head -n1
+}
+
+function destruct_description_id() {
+  cmd="sed -e 's/.*(\(.*\))$/\1/g'"
+  if [ -p /dev/stdin ]; then
+    cat - | eval $cmd
+  else
+    cat $1 | eval $cmd
+  fi
+}
+
+function destruct_description_name() {
+  cmd="sed -e 's/\(.*\)(.*)$/\1/g'"
+  if [ -p /dev/stdin ]; then
+    cat - | eval $cmd
+  else
+    cat $1 | eval $cmd
+  fi
+}
+
+function random-select() {
+  contents=$(cat -)
+
+  linenum=$(wc -l <<< $contents)
+
+  nth=$(( $RANDOM % $linenum ))
+
+  tail -n+$nth <<< $contents | head -n1
+}
+
+function destruct-description-id() {
+  cmd="sed -e 's/.*(\(.*\))$/\1/g'"
+  if [ -p /dev/stdin ]; then
+    cat - | eval $cmd
+  else
+    cat $1 | eval $cmd
+  fi
+}
+
+function destruct-description-name() {
+  cmd="sed -e 's/\(.*\)(.*)$/\1/g'"
+  if [ -p /dev/stdin ]; then
+    cat - | eval $cmd
+  else
+    cat $1 | eval $cmd
+  fi
+}
+
+function get_contest_id() {
+  if [ -z "$ATOOLS_CURRENT_CONTEST" ];then
+    if [ -z "$1" ];then
+      atools contest-list | fzf | destruct_description_id
+    else
+      echo $1
+    fi
+  else
+    echo $ATOOLS_CURRENT_CONTEST
+  fi
+}
+
+function get_problem_id() {
+  if [ -z "$ATOOLS_CURRENT_PROBLEM" ];then
+    if [ -z "$1" ];then
+      if [ -z "$2" ];then
+        atools problem-list -a | fzf | destruct_description_id
+      else
+        atools problem-list -c $2 | fzf | destruct_description_id
+      fi
+    else
+      echo $1
+    fi
+  else
+     echo $ATOOLS_CURRENT_PROBLEM
+  fi
 }
