@@ -6,10 +6,10 @@ source "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/atools-common"
 
 contests=$(atools contest-list)
 
-contest_id=$(random-select <<< $contests | destruct-description-id)
+contest_id=$(random_select <<< $contests | destruct_description_id)
 
 problems=$(atools problem-list $contest_id)
 
-problem_id=$(random-select <<< $problems | destruct-description-id)
+problem_id=$(random_select <<< $problems | destruct_description_id)
 
 echo $contest_id $problem_id

@@ -42,7 +42,7 @@ function get_api_info() {
   cat $cache_path
 }
 
-function random-select() {
+function random_select() {
   contents=$(cat -)
 
   linenum=$(wc -l <<< $contents)
@@ -52,7 +52,7 @@ function random-select() {
   tail -n+$nth <<< $contents | head -n1
 }
 
-function destruct-description-id() {
+function destruct_description_id() {
   cmd="sed -e 's/.*(\(.*\))$/\1/g'"
   if [ -p /dev/stdin ]; then
     cat - | eval $cmd
@@ -61,7 +61,7 @@ function destruct-description-id() {
   fi
 }
 
-function destruct-description-name() {
+function destruct_description_name() {
   cmd="sed -e 's/\(.*\)(.*)$/\1/g'"
   if [ -p /dev/stdin ]; then
     cat - | eval $cmd
