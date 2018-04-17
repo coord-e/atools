@@ -59,8 +59,10 @@ done
 
 [ -n "$arg_contest_id" -a -v arg_all ] && error "You can't specify both --all and --contest"
 
-current_contest=$(get_contest_id $arg_contest_id)
-[ ! -v arg_all -a -z "$current_contest" ] && error "You must specify contest id with -c when \$ATOOLS_CURRENT_CONTEST or --all is not set."
+if [ ! -v arg_all ];then
+  current_contest=$(get_contest_id $arg_contest_id)
+  [ -z "$current_contest" ] && error "You must specify contest id with -c when \$ATOOLS_CURRENT_CONTEST or --all is not set."
+fi
 
 problems=$(get_api_info problems)
 if [ -v arg_all ]; then
