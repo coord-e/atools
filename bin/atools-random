@@ -8,7 +8,7 @@ contests=$(atools contest-list)
 
 contest_id=$(random_select <<< $contests | destruct_description_id)
 
-problems=$(atools problem-list $contest_id)
+problems=$(atools problem-list -c $contest_id)
 
 problem_id=$(random_select <<< $problems | destruct_description_id)
 
