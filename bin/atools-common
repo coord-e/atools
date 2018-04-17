@@ -42,6 +42,20 @@ function get_api_info() {
   cat $cache_path
 }
 
+function find_fuzzy_finder() {
+  if [ -z "$ATOOLS_FUZZY_FINDER" ];then
+    if type fzf >/dev/null 2>&1;then
+      echo "fzf"
+    elif type peco >/dev/null 2>&1;then
+      echo "peco"
+    else
+      echo "echo -n ''"
+    fi
+  else
+    echo $ATOOLS_FUZZY_FINDER
+  fi
+}
+
 function random_select() {
   contents=$(cat -)
 
@@ -101,7 +115,7 @@ function destruct-description-name() {
 function get_contest_id() {
   if [ -z "$ATOOLS_CURRENT_CONTEST" ];then
     if [ -z "$1" ];then
-      atools contest-list | fzf | destruct_description_id
+      atools contest-list | $(find_fuzzy_finder) | destruct_description_id
     else
       echo $1
     fi
@@ -114,9 +128,9 @@ function get_problem_id() {
   if [ -z "$ATOOLS_CURRENT_PROBLEM" ];then
     if [ -z "$1" ];then
       if [ -z "$2" ];then
-        atools problem-list -a | fzf | destruct_description_id
+        atools problem-list -a | $(find_fuzzy_finder) | destruct_description_id
       else
-        atools problem-list -c $2 | fzf | destruct_description_id
+        atools problem-list -c $2 | $(find_fuzzy_finder) | destruct_description_id
       fi
     else
       echo $1
