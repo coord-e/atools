@@ -68,7 +68,7 @@ fi
 
 problems=$(get_api_info problems)
 if [ -v arg_all ]; then
-  jq ".[].title + \" (\" + .[].id + \")\"" -r <<< $problems
+  jq ".[] | .title + \" (\" + .id + \")\"" -r <<< $problems
 else
   jq ".[] | if .contest_id == \"${current_contest}\" then .title + \" (\" + .id + \")\" else empty end" -r <<< $problems
 fi
