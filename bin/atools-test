@@ -5,7 +5,7 @@
 source "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/atools-common"
 
 usage() {
-    echo "Usage: $ATOOLS_PROGNAME test [OPTIONS] COMMAND"
+    echo "Usage: $(current_script $0) [OPTIONS] COMMAND"
     echo "  Test your answers."
     echo
     echo "Options:"
@@ -30,14 +30,14 @@ do
             ;;
         '-p'|'--problem' )
             if [[ -z "$2" ]] || [[ "$2" =~ ^-+ ]]; then
-                error "$ATOOLS_PROGNAME test: option requires an argument -- $1"
+              error "$(current_script $0): option requires an argument -- $1"
             fi
             arg_problem_id="$2"
             shift 2
             ;;
         '-c'|'--contest' )
             if [[ -z "$2" ]] || [[ "$2" =~ ^-+ ]]; then
-                error "$ATOOLS_PROGNAME test: option requires an argument -- $1"
+              error "$(current_script $0): option requires an argument -- $1"
             fi
             arg_contest_id="$2"
             shift 2
@@ -48,7 +48,7 @@ do
             break
             ;;
         -*)
-            error "$ATOOLS_PROGNAME test: illegal option -- '$(echo $1 | sed 's/^-*//')'"
+            error "$(current_script $0): illegal option -- '$(echo $1 | sed 's/^-*//')'"
             ;;
         *)
             if [[ ! -z "$1" ]] && [[ ! "$1" =~ ^-+ ]]; then
@@ -62,7 +62,7 @@ done
 
 
 if [ -z $param ]; then
-    error "$ATOOLS_PROGNAME test: please supply a test command\nTry '$ATOOLS_PROGNAME test --help' for more information."
+  error "$(current_script $0): please supply a test command\nTry '$(current_script $0) --help' for more information."
 fi
 
 [ -z "$ATOOLS_CURRENT_CONTEST" -a -z "$arg_contest_id" ] && error "You must specify contest id with -c when \$ATOOLS_CURRENT_CONTEST is not set."

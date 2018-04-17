@@ -5,7 +5,7 @@
 source "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/atools-common"
 
 usage() {
-    echo "Usage: $ATOOLS_PROGNAME show [OPTIONS] PROBLEM_ID"
+    echo "Usage: $(current_script $0) [OPTIONS] PROBLEM_ID"
     echo "  Show a description page of a problem"
     echo
     echo "Options:"
@@ -29,7 +29,7 @@ do
             ;;
         '-c'|'--contest' )
             if [[ -z "$2" ]] || [[ "$2" =~ ^-+ ]]; then
-                error "$ATOOLS_PROGNAME show: option requires an argument -- $1"
+              error "$(current_script $0): option requires an argument -- $1"
             fi
             arg_contest_id="$2"
             shift 2
@@ -40,7 +40,7 @@ do
             break
             ;;
         -*)
-            error "$ATOOLS_PROGNAME show: illegal option -- '$(echo $1 | sed 's/^-*//')'"
+            error "$(current_script $0): illegal option -- '$(echo $1 | sed 's/^-*//')'"
             ;;
         *)
             if [[ ! -z "$1" ]] && [[ ! "$1" =~ ^-+ ]]; then
@@ -54,7 +54,7 @@ done
 
 
 if [ -z $param ]; then
-    error "$ATOOLS_PROGNAME show: too few arguments\nTry '$ATOOLS_PROGNAME show --help' for more information."
+  error "$(current_script $0): too few arguments\nTry '$(current_script $0) --help' for more information."
 fi
 
 [ -z "$ATOOLS_CURRENT_CONTEST" -a -z "$arg_contest_id" ] && error "You must specify contest id with -c when \$ATOOLS_CURRENT_CONTEST is not set."

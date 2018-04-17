@@ -5,7 +5,7 @@
 source "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/atools-common"
 
 usage() {
-    echo "Usage: $ATOOLS_PROGNAME problem-list [OPTIONS]"
+    echo "Usage: $(current_script $0) [OPTIONS]"
     echo "  Print full list of problems"
     echo
     echo "Options:"
@@ -34,7 +34,7 @@ do
             ;;
         '-c'|'--contest' )
             if [[ -z "$2" ]] || [[ "$2" =~ ^-+ ]]; then
-                error "$ATOOLS_PROGNAME contest-list: option requires an argument -- $1"
+                error "$(current_script $0): option requires an argument -- $1"
             fi
             arg_contest_id="$2"
             shift 2
@@ -45,7 +45,7 @@ do
             break
             ;;
         -*)
-            error "$ATOOLS_PROGNAME contest-list: illegal option -- '$(echo $1 | sed 's/^-*//')'"
+            error "$(current_script $0): illegal option -- '$(echo $1 | sed 's/^-*//')'"
             ;;
         *)
             if [[ ! -z "$1" ]] && [[ ! "$1" =~ ^-+ ]]; then
