@@ -45,9 +45,13 @@ do
     esac
 done
 
-time_diff=$((ATOOLS_DURATION + ATOOLS_START_EPOCH - $(date +%s)))
+contest_name=$(get_api_info contests | jq -r ".[] | if .id == \"$ATOOLS_CURRENT_CONTEST\" then .title else empty end")
+
+end_epoch=$((ATOOLS_DURATION + ATOOLS_START_EPOCH))
+time_diff=$((end_epoch - $(date +%s)))
 hours=$((time_diff / 3600))
 minutes=$((time_diff % 3600 / 60))
 seconds=$((time_diff % 60))
+info "Period: $(date -d @$ATOOLS_START_EPOCH +%H:%M:%S) ~ $(date -d @$end_epoch +%H:%M:%S)"
 info "Time left: $hours:$minutes:$seconds"
-
+info "Contest: $contest_name"
