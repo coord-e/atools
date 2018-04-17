@@ -58,4 +58,4 @@ current_contest=$(get_contest_id "$arg_contest_id")
 current_problem=$(get_problem_id "$param" "$current_contest")
 [ -z "$current_problem" ] && error "You must specify problem id when \$ATOOLS_CURRENT_PROBLEM is not set."
 
-curl -sS https://beta.atcoder.jp/contests/$current_contest/tasks/$current_problem | pup '#main-container > div > div:nth-child(2)' |  w3m -T text/html -dump
+curl -sS https://beta.atcoder.jp/contests/$current_contest/tasks/$current_problem | xmllint --html --xpath '//*[@id="main-container"]/div/div[2]' - 2>/dev/null |  w3m -T text/html -dump
