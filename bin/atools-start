@@ -73,7 +73,7 @@ EOT
 
 chmod +x $ATOOLS_ALARM_SCRIPT
 
-nohup $ATOOLS_ALARM_SCRIPT &
+nohup $ATOOLS_ALARM_SCRIPT >/dev/null 2>&1 &
 export ATOOLS_ALARM_PID=$!
 
 save_session
