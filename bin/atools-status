@@ -45,6 +45,10 @@ do
     esac
 done
 
+if [ ! -v ATOOLS_CURRENT_CONTEST ]; then
+  error "Not in contest. Start contest with \"atools start\""
+fi
+
 contest_name=$(get_api_info contests | jq -r ".[] | if .id == \"$ATOOLS_CURRENT_CONTEST\" then .title else empty end")
 
 end_epoch=$((ATOOLS_DURATION + ATOOLS_START_EPOCH))
