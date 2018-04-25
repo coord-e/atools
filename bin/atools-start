@@ -1,0 +1,86 @@
+#!/bin/bash
+# -*- coding: utf-8 -*-
+# vim:ft=sh :
+
+source "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/atools-common"
+
+usage() {
+    echo "Usage: $(current_script $0) [OPTIONS]"
+    echo "  Start session."
+    echo
+    echo "Options:"
+    echo "  -h, --help"
+    echo "  -V, --version"
+    echo "  -c, --contest ARG"
+    echo
+    exit 1
+}
+
+for OPT in "$@"
+do
+    case "$OPT" in
+        '-h'|'--help' )
+            usage
+            exit 1
+            ;;
+        '-V'|'--version' )
+            echo $ATOOLS_VERSION
+            exit 1
+            ;;
+        '-c'|'--contest' )
+            if [[ -z "$2" ]] || [[ "$2" =~ ^-+ ]]; then
+              error "$(current_script $0): option requires an argument -- $1"
+            fi
+            arg_contest_id="$2"
+            shift 2
+            ;;
+        '--'|'-' )
+            shift 1
+            param+=( "$@" )
+            break
+            ;;
+        -*)
+            error "$(current_script $0): illegal option -- '$(echo $1 | sed 's/^-*//')'"
+            ;;
+        *)
+            error "$(current_script $0): illegal parameter -- '$(echo $1 | sed 's/^-*//')'"
+            #if [[ ! -z "$1" ]] && [[ ! "$1" =~ ^-+ ]]; then
+            #    #param=( ${param[@]} "$1" )
+            #    param+=( "$1" )
+            #    shift 1
+            #fi
+            ;;
+    esac
+done
+
+if [ -v ATOOLS_CURRENT_CONTEST ]; then
+  info "You're already in contest \"$ATOOLS_CURRENT_CONTEST\"."
+  confirm "Overwrite?" || error "OK, continue current contest."
+fi
+
+ATOOLS_CURRENT_CONTEST=""
+current_contest=$(get_contest_id "$arg_contest_id")
+[ -z "$current_contest" ] && error "You must specify contest id with -c"
+
+duration_second=$(get_api_info contests | jq -r ".[] | if .id == \"$current_contest\" then .duration_second else empty end")
+
+export ATOOLS_CURRENT_CONTEST=$current_contest
+export ATOOLS_DURATION=$duration_second
+export ATOOLS_START_EPOCH=$(date +%s)
+export ATOOLS_ALARM_SCRIPT=$ATOOLS_CACHE_PATH/.$$-alarm
+
+cat << EOT > $ATOOLS_ALARM_SCRIPT
+#!/bin/bash
+trap 'kill \$(jobs -p)' EXIT
+sleep $duration_second
+wall "Contest $current_contest has ended just now!"
+rm -f $ATOOLS_ALARM_SCRIPT
+:>$(pwd)/$ATOOLS_SESSION_FILE
+EOT
+
+chmod +x $ATOOLS_ALARM_SCRIPT
+
+nohup $ATOOLS_ALARM_SCRIPT >/dev/null 2>&1 &
+export ATOOLS_ALARM_PID=$!
+
+save_session

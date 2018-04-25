@@ -1,0 +1,61 @@
+#!/bin/bash
+# -*- coding: utf-8 -*-
+# vim:ft=sh :
+
+source "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/atools-common"
+
+usage() {
+    echo "Usage: $(current_script $0) [OPTIONS]"
+    echo "  Print current status"
+    echo
+    echo "Options:"
+    echo "  -h, --help"
+    echo "  -V, --version"
+    echo
+    exit 1
+}
+
+for OPT in "$@"
+do
+    case "$OPT" in
+        '-h'|'--help' )
+            usage
+            exit 1
+            ;;
+        '-V'|'--version' )
+            echo $ATOOLS_VERSION
+            exit 1
+            ;;
+        '--'|'-' )
+            shift 1
+            param+=( "$@" )
+            break
+            ;;
+        -*)
+            error "$(current_script $0): illegal option -- '$(echo $1 | sed 's/^-*//')'"
+            ;;
+        *)
+            error "$(current_script $0): illegal parameter -- '$(echo $1 | sed 's/^-*//')'"
+            #if [[ ! -z "$1" ]] && [[ ! "$1" =~ ^-+ ]]; then
+            #    #param=( ${param[@]} "$1" )
+            #    param+=( "$1" )
+            #    shift 1
+            #fi
+            ;;
+    esac
+done
+
+if [ ! -v ATOOLS_CURRENT_CONTEST ]; then
+  error "Not in contest. Start contest with \"atools start\""
+fi
+
+contest_name=$(get_api_info contests | jq -r ".[] | if .id == \"$ATOOLS_CURRENT_CONTEST\" then .title else empty end")
+
+end_epoch=$((ATOOLS_DURATION + ATOOLS_START_EPOCH))
+time_diff=$((end_epoch - $(date +%s)))
+hours=$((time_diff / 3600))
+minutes=$((time_diff % 3600 / 60))
+seconds=$((time_diff % 60))
+info "Period: $(date -d @$ATOOLS_START_EPOCH +%H:%M:%S) ~ $(date -d @$end_epoch +%H:%M:%S)"
+info "Time left: $hours:$minutes:$seconds"
+info "Contest: $contest_name"
