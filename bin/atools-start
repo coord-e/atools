@@ -53,6 +53,11 @@ do
     esac
 done
 
+if [ -v ATOOLS_CURRENT_CONTEST ]; then
+  info "You're already in contest \"$ATOOLS_CURRENT_CONTEST\"."
+  confirm "Overwrite?" || error "OK, continue current contest."
+fi
+
 ATOOLS_CURRENT_CONTEST=""
 current_contest=$(get_contest_id "$arg_contest_id")
 [ -z "$current_contest" ] && error "You must specify contest id with -c"
