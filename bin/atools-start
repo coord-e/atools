@@ -70,6 +70,7 @@ export ATOOLS_START_EPOCH=$(date +%s)
 export ATOOLS_ALARM_SCRIPT=$ATOOLS_CACHE_PATH/.$$-alarm
 
 cat << EOT > $ATOOLS_ALARM_SCRIPT
+trap 'kill \$(jobs -p)' EXIT
 sleep $duration_second
 wall "Contest $current_contest has ended just now!"
 rm -f $ATOOLS_ALARM_SCRIPT
