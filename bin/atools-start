@@ -73,7 +73,7 @@ cat << EOT > $ATOOLS_ALARM_SCRIPT
 #!/bin/bash
 trap 'kill \$(jobs -p)' EXIT
 sleep $duration_second
-wall "Contest $current_contest has ended just now!"
+echo "Contest $current_contest has ended just now!" > $(tty)
 rm -f $ATOOLS_ALARM_SCRIPT
 :>$(pwd)/$ATOOLS_SESSION_FILE
 EOT
