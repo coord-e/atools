@@ -63,8 +63,8 @@ cat << EOT
 export ATOOLS_CURRENT_CONTEST=$current_contest
 export ATOOLS_DURATION=$duration_second
 export ATOOLS_START_EPOCH=$(date +%s)
-export ATOOLS_ALARM_SCRIPT=$ATOOLS_CACHE_PATH/.$$-alarm
-export ATOOLS_FINISH_SCRIPT=$ATOOLS_CACHE_PATH/.$$-finish
+export ATOOLS_ALARM_SCRIPT=$ATOOLS_CACHE_PATH/.\$\$-alarm
+export ATOOLS_FINISH_SCRIPT=$ATOOLS_CACHE_PATH/.\$\$-finish
 trap 'source \$ATOOLS_FINISH_SCRIPT' SIGALRM
 cat << EOF > \$ATOOLS_ALARM_SCRIPT
 sleep $duration_second
@@ -73,6 +73,7 @@ EOF
 cat << EOF > \$ATOOLS_FINISH_SCRIPT
 echo -e "\nContest $current_contest has ended just now!\n"
 trap SIGALRM
+kill \\\$(ps aux | grep "\$ATOOLS_ALARM_SCRIPT" | grep -v grep | awk '{ print \\\$2 }')
 unset ATOOLS_CURRENT_CONTEST
 unset ATOOLS_DURATION
 unset ATOOLS_START_EPOCH
