@@ -59,28 +59,21 @@ current_contest=$(get_contest_id "$arg_contest_id")
 
 duration_second=$(get_api_info contests | jq -r ".[] | if .id == \"$current_contest\" then .duration_second else empty end")
 
-cat << EOT
 export ATOOLS_CURRENT_CONTEST=$current_contest
 export ATOOLS_DURATION=$duration_second
 export ATOOLS_START_EPOCH=$(date +%s)
-export ATOOLS_ALARM_SCRIPT=$ATOOLS_CACHE_PATH/.\$\$-alarm
-export ATOOLS_FINISH_SCRIPT=$ATOOLS_CACHE_PATH/.\$\$-finish
-trap 'source \$ATOOLS_FINISH_SCRIPT' SIGALRM
-cat << EOF > \$ATOOLS_ALARM_SCRIPT
+export ATOOLS_ALARM_SCRIPT=$ATOOLS_CACHE_PATH/.$$-alarm
+
+cat << EOT > $ATOOLS_ALARM_SCRIPT
 sleep $duration_second
-kill -ALRM \$\$
-EOF
-cat << EOF > \$ATOOLS_FINISH_SCRIPT
-echo -e "\nContest $current_contest has ended just now!\n"
-trap SIGALRM
-kill \\\$(ps aux | grep "\$ATOOLS_ALARM_SCRIPT" | grep -v grep | awk '{ print \\\$2 }')
-unset ATOOLS_CURRENT_CONTEST
-unset ATOOLS_DURATION
-unset ATOOLS_START_EPOCH
-unset ATOOLS_ALARM_SCRIPT
-unset ATOOLS_FINISH_SCRIPT
-rm \$ATOOLS_ALARM_SCRIPT
-rm \$ATOOLS_FINISH_SCRIPT
-EOF
-(nohup bash \$ATOOLS_ALARM_SCRIPT >/dev/null 2>&1 &)
+wall "Contest $current_contest has ended just now!"
+rm -f $ATOOLS_ALARM_SCRIPT
+:>$(pwd)/$ATOOLS_SESSION_FILE
 EOT
+
+chmod +x $ATOOLS_ALARM_SCRIPT
+
+nohup $ATOOLS_ALARM_SCRIPT &
+export ATOOLS_ALARM_PID=$!
+
+save_session

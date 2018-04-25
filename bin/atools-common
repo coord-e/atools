@@ -4,8 +4,11 @@
 readonly ATOOLS_VERSION='0.1'
 readonly ATOOLS_SUBCOMMAND_PREFIX='atools-'
 readonly ATOOLS_PROGNAME='atools'
+readonly ATOOLS_SESSION_FILE='.atools-session'
 
 export ATOOLS_CACHE_PATH=$HOME/.cache/atools
+
+[ -f $ATOOLS_SESSION_FILE ] && source $ATOOLS_SESSION_FILE
 
 mkdir -p $ATOOLS_CACHE_PATH
 
@@ -124,4 +127,17 @@ function get_problem_id() {
   else
      echo $ATOOLS_CURRENT_PROBLEM
   fi
+}
+
+function _export_if_found() {
+  [ -v $1 ] && echo "export $1=${!1}"
+}
+
+function save_session() {
+  :>$ATOOLS_SESSION_FILE
+  _export_if_found ATOOLS_CURRENT_CONTEST >> $ATOOLS_SESSION_FILE
+  _export_if_found ATOOLS_DURATION >> $ATOOLS_SESSION_FILE
+  _export_if_found ATOOLS_START_EPOCH >> $ATOOLS_SESSION_FILE
+  _export_if_found ATOOLS_ALARM_SCRIPT >> $ATOOLS_SESSION_FILE
+  _export_if_found ATOOLS_ALARM_PID >> $ATOOLS_SESSION_FILE
 }
