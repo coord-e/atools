@@ -16,6 +16,8 @@ function _complete() {
     fi
   elif [ "$before" = "atools" ];then
     COMPREPLY=( $(compgen -W "$(find $ATOOLS_ABS_PATH -name $ATOOLS_SUBCOMMAND_PREFIX* | xargs -L 1 basename | sed -e 's/atools-//g')" ${COMP_WORDS[COMP_CWORD]}  ) )
+  elif [ "$before" = "test" ];then
+    _filedir
   fi
 }
 
