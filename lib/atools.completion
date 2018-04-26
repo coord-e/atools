@@ -14,7 +14,7 @@ function _complete() {
     else
       COMPREPLY=( $(compgen -W "$(atools problem-list -f '.id')" ${COMP_WORDS[COMP_CWORD]}  ) )
     fi
-  else
+  elif [ "$before" = "atools" ];then
     COMPREPLY=( $(compgen -W "$(find $ATOOLS_ABS_PATH -name $ATOOLS_SUBCOMMAND_PREFIX* | xargs -L 1 basename | sed -e 's/atools-//g')" ${COMP_WORDS[COMP_CWORD]}  ) )
   fi
 }
