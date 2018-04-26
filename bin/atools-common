@@ -6,6 +6,7 @@ readonly ATOOLS_SUBCOMMAND_PREFIX='atools-'
 readonly ATOOLS_PROGNAME='atools'
 readonly ATOOLS_SESSION_FILE='.atools-session'
 
+export ATOOLS_ABS_PATH=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 export ATOOLS_CACHE_PATH=$HOME/.cache/atools
 
 [ -f $ATOOLS_SESSION_FILE ] && source $ATOOLS_SESSION_FILE
