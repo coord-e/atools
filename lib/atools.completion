@@ -9,7 +9,11 @@ function _complete() {
   if [ "$before" = "-c" ]; then
     COMPREPLY=( $(compgen -W "$(atools contest-list -f '.id')" ${COMP_WORDS[COMP_CWORD]}  ) )
   elif [ "$before" = "-p" ]; then
-    COMPREPLY=( $(compgen -W "$(atools problem-list -f '.id' -a)" ${COMP_WORDS[COMP_CWORD]}  ) )
+    if [ -z "$(grep ATOOLS_CURRENT_CONTEST $ATOOLS_SESSION_FILE)" ];then
+      COMPREPLY=( $(compgen -W "$(atools problem-list -f '.id' -a)" ${COMP_WORDS[COMP_CWORD]}  ) )
+    else
+      COMPREPLY=( $(compgen -W "$(atools problem-list -f '.id')" ${COMP_WORDS[COMP_CWORD]}  ) )
+    fi
   else
     COMPREPLY=( $(compgen -W "$(find $ATOOLS_ABS_PATH -name $ATOOLS_SUBCOMMAND_PREFIX* | xargs -L 1 basename | sed -e 's/atools-//g')" ${COMP_WORDS[COMP_CWORD]}  ) )
   fi
