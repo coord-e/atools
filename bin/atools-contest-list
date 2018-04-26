@@ -11,6 +11,7 @@ usage() {
     echo "Options:"
     echo "  -h, --help"
     echo "  -V, --version"
+    echo "  -f, --format FORMAT"
     echo
     exit 1
 }
@@ -26,6 +27,13 @@ do
             echo $ATOOLS_VERSION
             exit 1
             ;;
+        '-f'|'--format' )
+            if [[ -z "$2" ]] || [[ "$2" =~ ^-+ ]]; then
+                error "$(current_script $0): option requires an argument -- $1"
+            fi
+            arg_format="$2"
+            shift 2
+            ;;
         '--'|'-' )
             shift 1
             param+=( "$@" )
@@ -35,14 +43,19 @@ do
             error "$(current_script $0): illegal option -- '$(echo $1 | sed 's/^-*//')'"
             ;;
         *)
-            error "$(current_script $0): illegal parameter -- '$(echo $1 | sed 's/^-*//')'"
-            #if [[ ! -z "$1" ]] && [[ ! "$1" =~ ^-+ ]]; then
-            #    #param=( ${param[@]} "$1" )
-            #    param+=( "$1" )
-            #    shift 1
-            #fi
+            if [[ ! -z "$1" ]] && [[ ! "$1" =~ ^-+ ]]; then
+                #param=( ${param[@]} "$1" )
+                param+=( "$1" )
+                shift 1
+            fi
             ;;
     esac
 done
 
-get_api_info contests | jq '.[] | .title + " (" + .id + ")"' -r
+if [ -v arg_format ];then
+  format=$arg_format
+else
+  format='.title + " (" + .id + ")"'
+fi
+
+get_api_info contests | jq ".[] | $format" -r
