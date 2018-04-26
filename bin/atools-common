@@ -9,6 +9,8 @@ readonly ATOOLS_SESSION_FILE='.atools-session'
 export ATOOLS_ABS_PATH=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 export ATOOLS_CACHE_PATH=$HOME/.cache/atools
 
+export PATH=$PATH:$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+
 [ -f $ATOOLS_SESSION_FILE ] && source $ATOOLS_SESSION_FILE
 
 mkdir -p $ATOOLS_CACHE_PATH

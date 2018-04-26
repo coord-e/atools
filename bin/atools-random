@@ -11,6 +11,7 @@ usage() {
     echo "Options:"
     echo "  -h, --help"
     echo "  -V, --version"
+    echo "  -s, --start"
     echo
     exit 1
 }
@@ -25,6 +26,9 @@ do
         '-V'|'--version' )
             echo $ATOOLS_VERSION
             exit 1
+            ;;
+        '-s'|'--start' )
+            arg_start=1
             ;;
         '--'|'-' )
             shift 1
@@ -52,5 +56,10 @@ contest_id=$(random_select <<< $contests | destruct_description_id)
 problems=$(atools problem-list -c $contest_id)
 
 problem_id=$(random_select <<< $problems | destruct_description_id)
+
+if [ -v arg_start ]; then
+  atools start -c $contest_id
+  info "Started $contest_id"
+fi
 
 echo $contest_id $problem_id

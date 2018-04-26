@@ -43,12 +43,11 @@ do
             error "$(current_script $0): illegal option -- '$(echo $1 | sed 's/^-*//')'"
             ;;
         *)
-            error "$(current_script $0): illegal parameter -- '$(echo $1 | sed 's/^-*//')'"
-            #if [[ ! -z "$1" ]] && [[ ! "$1" =~ ^-+ ]]; then
-            #    #param=( ${param[@]} "$1" )
-            #    param+=( "$1" )
-            #    shift 1
-            #fi
+            if [[ ! -z "$1" ]] && [[ ! "$1" =~ ^-+ ]]; then
+                #param=( ${param[@]} "$1" )
+                param+=( "$1" )
+                shift 1
+            fi
             ;;
     esac
 done
