@@ -1,0 +1,11 @@
+#!/bin/bash
+# -*- coding: utf-8 -*-
+# vim:ft=sh :
+
+source "$(dirname "$(which atools)")/atools-common"
+
+function _complete() {
+  COMPREPLY=( $(compgen -W "$(find $ATOOLS_ABS_PATH -name $ATOOLS_SUBCOMMAND_PREFIX* | xargs -L 1 basename | sed -e 's/atools-//g')" ${COMP_WORDS[COMP_CWORD]}  ) )
+}
+
+complete -F _complete atools
