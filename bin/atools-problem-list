@@ -13,6 +13,7 @@ usage() {
     echo "  -V, --version"
     echo "  -a, --all"
     echo "  -c, --contest ARG"
+    echo "  -f, --format FORMAT"
     echo
     exit 1
 }
@@ -37,6 +38,13 @@ do
                 error "$(current_script $0): option requires an argument -- $1"
             fi
             arg_contest_id="$2"
+            shift 2
+            ;;
+        '-f'|'--format' )
+            if [[ -z "$2" ]] || [[ "$2" =~ ^-+ ]]; then
+                error "$(current_script $0): option requires an argument -- $1"
+            fi
+            arg_format="$2"
             shift 2
             ;;
         '--'|'-' )
@@ -64,10 +72,16 @@ if [ ! -v arg_all ];then
   [ -z "$current_contest" ] && error "You must specify contest id with -c when \$ATOOLS_CURRENT_CONTEST or --all is not set."
 fi
 
+if [ -v arg_format ];then
+  format=$arg_format
+else
+  format='.title + " (" + .id + ")"'
+fi
+
 problems=$(get_api_info problems)
 if [ -v arg_all ]; then
-  jq ".[] | .title + \" (\" + .id + \")\"" -r <<< $problems
+  jq ".[] | $format" -r <<< $problems
 else
-  jq ".[] | if .contest_id == \"${current_contest}\" then .title + \" (\" + .id + \")\" else empty end" -r <<< $problems
+  jq ".[] | if .contest_id == \"${current_contest}\" then $format else empty end" -r <<< $problems
 fi
 
