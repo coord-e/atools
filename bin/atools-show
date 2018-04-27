@@ -66,4 +66,23 @@ current_contest=$(get_contest_id "$arg_contest_id")
 current_problem=$(get_problem_id "$arg_problem_id" "$current_contest")
 [ -z "$current_problem" ] && error "You must specify problem id with -p when \$ATOOLS_CURRENT_PROBLEM is not set."
 
-curl -sS https://beta.atcoder.jp/contests/$current_contest/tasks/$current_problem | xmllint --html --xpath '//*[@id="main-container"]/div/div[2]' - 2>/dev/null |  w3m -T text/html -dump
+content=$(curl -sS https://beta.atcoder.jp/contests/$current_contest/tasks/$current_problem | xmllint --html --xpath '//*[@id="main-container"]/div/div[2]' - 2>/dev/null)
+
+if [ -v ATOOLS_CURRENT_CONTEST ];then
+  eline="export ATOOLS_CURRENT_PROBLEM=$current_problem"
+  echo $eline >> $ATOOLS_SESSION_FILE
+fi
+
+if [ -t 1 ] ; then
+  w3m -T text/html <<< $content
+  sed -i "/$eline/d" $ATOOLS_SESSION_FILE
+else
+  w3m -T text/html -dump <<< $content
+  if [ -v ATOOLS_CURRENT_CONTEST ]; then
+    trap "sed -i '/$eline/d' $ATOOLS_SESSION_FILE" EXIT
+    pipe=$(readlink /proc/$$/fd/1 | sed -e 's/pipe:\[\([0-9]*\)\]/\1/g')
+    pid=$(lsof -n -P -u $USER 2> /dev/null | awk "{if (\$4 ~ 0r && \$8 ~ $pipe) print \$2}")
+    tail --pid=$pid -f /dev/null
+    exit
+  fi
+fi
