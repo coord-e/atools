@@ -6,6 +6,8 @@ CLI民のための競プロ練習ツール
 
 English: [README.md](README.md)
 
+[![asciicast](https://asciinema.org/a/GLlCxp2uVUseXk4yDu5RBJAt9.png)](https://asciinema.org/a/GLlCxp2uVUseXk4yDu5RBJAt9)
+
 ## 機能
 
 できます

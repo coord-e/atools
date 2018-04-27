@@ -6,6 +6,8 @@ CLI-Powered Tool for the Practice of Competitive Programming using AtCoder.
 
 日本語: [README.ja.md](README.ja.md)
 
+[![asciicast](https://asciinema.org/a/GLlCxp2uVUseXk4yDu5RBJAt9.png)](https://asciinema.org/a/GLlCxp2uVUseXk4yDu5RBJAt9)
+
 ## Features
 
 ATools can...
