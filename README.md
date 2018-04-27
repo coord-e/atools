@@ -26,6 +26,7 @@ ATools cannot...
 
 Optional:
 - fzf or peco
+- tmux
 
 ## Installation
 
