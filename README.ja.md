@@ -1,8 +1,12 @@
-# ATools
+# ATools :scroll:
 
 CLI民のための競プロ練習ツール
 
-**練習用です。本番の大会には使用できません**
+**練習用です。今のところ、本番の大会には使用できません**
+
+English: [README.md](README.md)
+
+[![asciicast](https://asciinema.org/a/GLlCxp2uVUseXk4yDu5RBJAt9.png)](https://asciinema.org/a/GLlCxp2uVUseXk4yDu5RBJAt9)
 
 ## 機能
 
@@ -15,6 +19,8 @@ CLI民のための競プロ練習ツール
 - AtCoderにコードを提出する
 - 本番の大会に使う
 - コンテストの得点を計算したりする
+
+(きっとそのうち実装します)
 
 ## 依存関係
 

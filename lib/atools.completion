@@ -2,10 +2,11 @@
 # -*- coding: utf-8 -*-
 # vim:ft=sh :
 
-source "$(dirname "$(which atools)")/atools-common"
-
 function _complete() {
-  before=${COMP_WORDS[COMP_CWORD-1]}
+  local ATOOLS_ABS_PATH=$(dirname $(which atools))
+  local ATOOLS_SUBCOMMAND_PREFIX="atools-"
+  local ATOOLS_SESSION_FILE=".atools-session"
+  local before=${COMP_WORDS[COMP_CWORD-1]}
   if [ "$before" = "-c" ]; then
     COMPREPLY=( $(compgen -W "$(atools contest-list -f '.id')" ${COMP_WORDS[COMP_CWORD]}  ) )
   elif [ "$before" = "-p" ]; then
