@@ -4,6 +4,8 @@ CLI-Powered Tool for the Practice of Competitive Programming using AtCoder.
 
 **This is not for a real contest, but for a practice using the past contests**
 
+日本語: [README.ja.md](README.ja.md)
+
 ## Features
 
 ATools can...
