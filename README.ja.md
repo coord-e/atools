@@ -32,5 +32,6 @@ Optional:
 
 ```shell
 brew install coord-e/atools/atools
+echo 'source $(brew --prefix)/lib/atools/atools.completion' >> ~/.bashrc
 ```
 
