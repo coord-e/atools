@@ -1,4 +1,4 @@
-# ATools
+# ATools :scroll:
 
 CLI-Powered Tool for the Practice of Competitive Programming using AtCoder.
 

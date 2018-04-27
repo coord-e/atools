@@ -1,4 +1,4 @@
-# ATools
+# ATools :scroll:
 
 CLI民のための競プロ練習ツール
 
