@@ -1,0 +1,91 @@
+#!/bin/bash
+# -*- coding: utf-8 -*-
+# vim:ft=sh :
+
+source "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/atools-common"
+
+usage() {
+    echo "Usage: $(current_script $0) [OPTIONS]"
+    echo "  Show a description page of a problem"
+    echo
+    echo "Options:"
+    echo "  -h, --help"
+    echo "  -V, --version"
+    echo "  -c, --contest ARG"
+    echo "  -p, --problem ARG"
+    echo
+    exit 1
+}
+
+for OPT in "$@"
+do
+    case "$OPT" in
+        '-h'|'--help' )
+            usage
+            exit 1
+            ;;
+        '-V'|'--version' )
+            echo $ATOOLS_VERSION
+            exit 1
+            ;;
+        '-c'|'--contest' )
+            if [[ -z "$2" ]] || [[ "$2" =~ ^-+ ]]; then
+              error "$(current_script $0): option requires an argument -- $1"
+            fi
+            arg_contest_id="$2"
+            shift 2
+            ;;
+        '-p'|'--problem' )
+            if [[ -z "$2" ]] || [[ "$2" =~ ^-+ ]]; then
+              error "$(current_script $0): option requires an argument -- $1"
+            fi
+            arg_problem_id="$2"
+            shift 2
+            ;;
+        '--'|'-' )
+            shift 1
+            param+=( "$@" )
+            break
+            ;;
+        -*)
+            error "$(current_script $0): illegal option -- '$(echo $1 | sed 's/^-*//')'"
+            ;;
+        *)
+            if [[ ! -z "$1" ]] && [[ ! "$1" =~ ^-+ ]]; then
+                #param=( ${param[@]} "$1" )
+                param+=( "$1" )
+                shift 1
+            fi
+            ;;
+    esac
+done
+
+current_contest=$(get_contest_id "$arg_contest_id")
+[ -z "$current_contest" ] && error "You must specify contest id with -c when \$ATOOLS_CURRENT_CONTEST is not set."
+
+current_problem=$(get_problem_id "$arg_problem_id" "$current_contest")
+[ -z "$current_problem" ] && error "You must specify problem id with -p when \$ATOOLS_CURRENT_PROBLEM is not set."
+
+content=$(curl -sS https://beta.atcoder.jp/contests/$current_contest/tasks/$current_problem | xmllint --html --xpath '//*[@id="main-container"]/div/div[2]' - 2>/dev/null)
+
+if [ -t 1 ] ; then
+  if [ -v ATOOLS_CURRENT_CONTEST -a ! -v ATOOLS_CURRENT_PROBLEM ]; then
+    eline="export ATOOLS_CURRENT_PROBLEM=$current_problem"
+    echo $eline >> $ATOOLS_SESSION_FILE
+    w3m -T text/html <<< $content
+    sed -i "/$eline/d" $ATOOLS_SESSION_FILE
+  else
+    w3m -T text/html <<< $content
+  fi
+else
+  w3m -T text/html -dump <<< $content
+  if [[ $(uname -s) = *"Linux"* && -v ATOOLS_CURRENT_CONTEST && ! -v ATOOLS_CURRENT_PROBLEM ]]; then
+    eline="export ATOOLS_CURRENT_PROBLEM=$current_problem"
+    echo $eline >> $ATOOLS_SESSION_FILE
+    trap "sed -i '/$eline/d' $ATOOLS_SESSION_FILE" EXIT
+    pipe=$(readlink /proc/$$/fd/1 | sed -e 's/pipe:\[\([0-9]*\)\]/\1/g')
+    pid=$(lsof -n -P -u $USER 2> /dev/null | awk "{if (\$4 ~ 0r && \$8 ~ $pipe) print \$2}")
+    tail --pid=$pid -f /dev/null
+    exit
+  fi
+fi

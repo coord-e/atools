@@ -1,0 +1,146 @@
+# -*- coding: utf-8 -*-
+# vim:ft=sh :
+
+readonly ATOOLS_VERSION='1.0.0'
+readonly ATOOLS_SUBCOMMAND_PREFIX='atools-'
+readonly ATOOLS_PROGNAME='atools'
+readonly ATOOLS_SESSION_FILE='.atools-session'
+
+export ATOOLS_ABS_PATH=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+export ATOOLS_CACHE_PATH=$HOME/.cache/atools
+
+export PATH=$PATH:$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+
+[ -f $ATOOLS_SESSION_FILE ] && source $ATOOLS_SESSION_FILE
+
+mkdir -p $ATOOLS_CACHE_PATH
+
+function current_script() {
+  a=()
+  a=($(tr '-' ' ' <<< $1))
+  echo "atools ${a[1]}"
+}
+
+function info (){
+  >&2 echo -e "\033[0;32m-> \033[0m\033[0;01m $1\033[0;0m"
+}
+
+function error (){
+  >&2 echo -e "\033[0;31m[ERROR]\033[0m\033[0;01m $1\033[0;0m"
+  >&2 echo "Exiting."
+  exit -1
+}
+
+function warn (){
+  >&2 echo -e "\033[0;33m[WARN] \033[0m\033[0;01m $1\033[0;0m"
+}
+
+function confirm (){
+  MSG=$1
+  while true; do
+    printf '%s ' "$MSG"
+    printf "[y/n] > "
+    read input
+    if [ "$input" = "y" ]; then
+      return 0;
+    elif [ "$input" = "n" ]; then
+      return 1;
+    fi
+  done
+}
+
+function pull_api_info() {
+  curl -sS -o $ATOOLS_CACHE_PATH/$1 https://kenkoooo.com/atcoder/atcoder-api/info/$1
+}
+
+function get_api_info() {
+  cache_path=$ATOOLS_CACHE_PATH/$1
+  if [ ! -e $cache_path ]; then
+    pull_api_info $1
+  fi
+  cat $cache_path
+}
+
+function find_fuzzy_finder() {
+  if [ -z "$ATOOLS_FUZZY_FINDER" ];then
+    if type fzf >/dev/null 2>&1;then
+      echo "fzf"
+    elif type peco >/dev/null 2>&1;then
+      echo "peco"
+    else
+      echo "echo -n ''"
+    fi
+  else
+    echo $ATOOLS_FUZZY_FINDER
+  fi
+}
+
+function random_select() {
+  contents=$(cat -)
+
+  linenum=$(wc -l <<< $contents)
+
+  nth=$(( $RANDOM % $linenum ))
+
+  tail -n+$nth <<< $contents | head -n1
+}
+
+function destruct_description_id() {
+  cmd="sed -e 's/.*(\(.*\))$/\1/g'"
+  if [ -p /dev/stdin ]; then
+    cat - | eval $cmd
+  else
+    cat $1 | eval $cmd
+  fi
+}
+
+function destruct_description_name() {
+  cmd="sed -e 's/\(.*\)(.*)$/\1/g'"
+  if [ -p /dev/stdin ]; then
+    cat - | eval $cmd
+  else
+    cat $1 | eval $cmd
+  fi
+}
+
+function get_contest_id() {
+  if [ -z "$1" ];then
+    if [ -z "$ATOOLS_CURRENT_CONTEST" ];then
+      atools contest-list | $(find_fuzzy_finder) | destruct_description_id
+    else
+      echo $ATOOLS_CURRENT_CONTEST
+    fi
+  else
+    echo $1
+  fi
+}
+
+function get_problem_id() {
+  if [ -z "$1" ];then
+    if [ -z "$ATOOLS_CURRENT_PROBLEM" ];then
+      if [ -z "$2" ];then
+        atools problem-list -a | $(find_fuzzy_finder) | destruct_description_id
+      else
+        atools problem-list -c $2 | $(find_fuzzy_finder) | destruct_description_id
+      fi
+    else
+       echo $ATOOLS_CURRENT_PROBLEM
+    fi
+  else
+    echo $1
+  fi
+}
+
+function _export_if_found() {
+  [ -v $1 ] && echo "export $1=${!1}"
+}
+
+function save_session() {
+  :>$ATOOLS_SESSION_FILE
+  _export_if_found ATOOLS_CURRENT_CONTEST >> $ATOOLS_SESSION_FILE
+  _export_if_found ATOOLS_CURRENT_PROBLEM >> $ATOOLS_SESSION_FILE
+  _export_if_found ATOOLS_DURATION >> $ATOOLS_SESSION_FILE
+  _export_if_found ATOOLS_START_EPOCH >> $ATOOLS_SESSION_FILE
+  _export_if_found ATOOLS_ALARM_SCRIPT >> $ATOOLS_SESSION_FILE
+  _export_if_found ATOOLS_ALARM_PID >> $ATOOLS_SESSION_FILE
+}

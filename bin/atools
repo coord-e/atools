@@ -1,0 +1,59 @@
+#!/bin/bash
+# -*- coding: utf-8 -*-
+# vim:ft=sh :
+
+ABS_DIR="$(dirname $( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd ))"
+
+source $ABS_DIR/bin/atools-common
+
+PATH=$ABS_DIR/bin:$PATH
+
+usage() {
+    echo "Usage: $ATOOLS_PROGNAME SUBCOMMAND [OPTIONS]"
+    echo "  atools: CLI-Powered Tools for AtCoder"
+    echo
+    exit 1
+}
+
+for OPT in "$@"
+do
+    case "$OPT" in
+        '-h'|'--help' )
+            usage
+            exit 1
+            ;;
+        '-V'|'--version' )
+            echo $ATOOLS_VERSION
+            exit 1
+            ;;
+        '--'|'-' )
+            shift 1
+            param+=( "$@" )
+            break
+            ;;
+        -*)
+            error "illegal option -- '$(echo $1 | sed 's/^-*//')'"
+            exit 1
+            ;;
+        *)
+            if [[ ! -z "$1" ]] && [[ ! "$1" =~ ^-+ ]]; then
+                #param=( ${param[@]} "$1" )
+                param+=( "$1" )
+                shift 1
+                break
+            fi
+            ;;
+    esac
+done
+
+if [ -z $param ]; then
+    error "$ATOOLS_PROGNAME: Please supply a subcommand\nTry '$ATOOLS_PROGNAME --help' for more information."
+fi
+
+subcommand="${ATOOLS_SUBCOMMAND_PREFIX}$param"
+
+if type "$subcommand" >/dev/null 2>&1 ; then
+    $subcommand "$@"
+else
+    error "$subcommand is not a valid subcommand for atools."
+fi

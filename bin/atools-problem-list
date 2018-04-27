@@ -1,0 +1,87 @@
+#!/bin/bash
+# -*- coding: utf-8 -*-
+# vim:ft=sh :
+
+source "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/atools-common"
+
+usage() {
+    echo "Usage: $(current_script $0) [OPTIONS]"
+    echo "  Print full list of problems"
+    echo
+    echo "Options:"
+    echo "  -h, --help"
+    echo "  -V, --version"
+    echo "  -a, --all"
+    echo "  -c, --contest ARG"
+    echo "  -f, --format FORMAT"
+    echo
+    exit 1
+}
+
+for OPT in "$@"
+do
+    case "$OPT" in
+        '-h'|'--help' )
+            usage
+            exit 1
+            ;;
+        '-V'|'--version' )
+            echo $ATOOLS_VERSION
+            exit 1
+            ;;
+        '-a'|'--all' )
+            arg_all=1
+            shift 1
+            ;;
+        '-c'|'--contest' )
+            if [[ -z "$2" ]] || [[ "$2" =~ ^-+ ]]; then
+                error "$(current_script $0): option requires an argument -- $1"
+            fi
+            arg_contest_id="$2"
+            shift 2
+            ;;
+        '-f'|'--format' )
+            if [[ -z "$2" ]] || [[ "$2" =~ ^-+ ]]; then
+                error "$(current_script $0): option requires an argument -- $1"
+            fi
+            arg_format="$2"
+            shift 2
+            ;;
+        '--'|'-' )
+            shift 1
+            param+=( "$@" )
+            break
+            ;;
+        -*)
+            error "$(current_script $0): illegal option -- '$(echo $1 | sed 's/^-*//')'"
+            ;;
+        *)
+            if [[ ! -z "$1" ]] && [[ ! "$1" =~ ^-+ ]]; then
+                #param=( ${param[@]} "$1" )
+                param+=( "$1" )
+                shift 1
+            fi
+            ;;
+    esac
+done
+
+[ -n "$arg_contest_id" -a -v arg_all ] && error "You can't specify both --all and --contest"
+
+if [ ! -v arg_all ];then
+  current_contest=$(get_contest_id $arg_contest_id)
+  [ -z "$current_contest" ] && error "You must specify contest id with -c when \$ATOOLS_CURRENT_CONTEST or --all is not set."
+fi
+
+if [ -v arg_format ];then
+  format=$arg_format
+else
+  format='.title + " (" + .id + ")"'
+fi
+
+problems=$(get_api_info problems)
+if [ -v arg_all ]; then
+  jq ".[] | $format" -r <<< $problems
+else
+  jq ".[] | if .contest_id == \"${current_contest}\" then $format else empty end" -r <<< $problems
+fi
+
