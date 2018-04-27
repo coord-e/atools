@@ -18,6 +18,8 @@ ATools cannot...
 - Be used for a real contest
 - Summarize your scores per contest
 
+(coming soon:smile:)
+
 ## Requirements
 
 - Bash 4.0 or higher
