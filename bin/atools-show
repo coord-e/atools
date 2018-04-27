@@ -68,17 +68,17 @@ current_problem=$(get_problem_id "$arg_problem_id" "$current_contest")
 
 content=$(curl -sS https://beta.atcoder.jp/contests/$current_contest/tasks/$current_problem | xmllint --html --xpath '//*[@id="main-container"]/div/div[2]' - 2>/dev/null)
 
-if [ -v ATOOLS_CURRENT_CONTEST ];then
+if [ -v ATOOLS_CURRENT_CONTEST -a ! -v ATOOLS_CURRENT_PROBLEM ];then
   eline="export ATOOLS_CURRENT_PROBLEM=$current_problem"
   echo $eline >> $ATOOLS_SESSION_FILE
 fi
 
 if [ -t 1 ] ; then
   w3m -T text/html <<< $content
-  sed -i "/$eline/d" $ATOOLS_SESSION_FILE
+  [ -v ATOOLS_CURRENT_CONTEST -a ! -v ATOOLS_CURRENT_PROBLEM ] && sed -i "/$eline/d" $ATOOLS_SESSION_FILE
 else
   w3m -T text/html -dump <<< $content
-  if [ -v ATOOLS_CURRENT_CONTEST ]; then
+  if [ -v ATOOLS_CURRENT_CONTEST -a ! -v ATOOLS_CURRENT_PROBLEM ]; then
     trap "sed -i '/$eline/d' $ATOOLS_SESSION_FILE" EXIT
     pipe=$(readlink /proc/$$/fd/1 | sed -e 's/pipe:\[\([0-9]*\)\]/\1/g')
     pid=$(lsof -n -P -u $USER 2> /dev/null | awk "{if (\$4 ~ 0r && \$8 ~ $pipe) print \$2}")
